@@ -1,0 +1,37 @@
+// Project-level build.gradle (android/build.gradle)
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        // Add this classpath for Google services
+        classpath 'com.google.gms:google-services:4.3.15'
+        // Other classpaths, such as:
+        // classpath 'com.android.tools.build:gradle:X.X.X'
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+// Optional: Configuration for build directories
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+
+// Optional: Configuration for project evaluation dependencies
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+// Task to clean build directories
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

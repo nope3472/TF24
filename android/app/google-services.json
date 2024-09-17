@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "122613859782",
+    "project_id": "tantrafiesta-6052b",
+    "storage_bucket": "tantrafiesta-6052b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:122613859782:android:af79499683b2c385291ec7",
+        "android_client_info": {
+          "package_name": "com.example.r_place_clone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBK30uohdYv8jZei6OSJdWn_Q9_7-nHKzw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
