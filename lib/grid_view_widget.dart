@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:r_place_clone/sign_in_page.dart'; // Ensure this import is correct
 import 'package:vector_math/vector_math_64.dart' as vm;
 import 'grid_state.dart';
 
@@ -53,33 +52,42 @@ class _ScalableGridPainterState extends State<ScalableGridPainter> {
             icon: Icon(Icons.exit_to_app),
             onPressed: () async {
               await FirebaseAuth.instance.signOut();
-              Navigator.pushReplacement(
-                context,
-                //MaterialPageRoute(builder: (context) => SignInPage()), // Redirect to SignInScreen
-              );
+              // Removed navigation code as per request
             },
           ),
         ],
       ),
       body: Column(
         children: [
+          if (gridState.remainingCooldownTime > 0)
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                'Cooldown: ${gridState.remainingCooldownTime} seconds',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
           Expanded(
             child: InteractiveViewer(
               transformationController: _transformationController,
               boundaryMargin: EdgeInsets.all(double.infinity),
-              minScale: 0.1, // Minimum zoom out
-              maxScale: 5.0,  // Maximum zoom in
-              panEnabled: true, // Allow panning
+              minScale: 0.1,
+              maxScale: 5.0,
+              panEnabled: true,
               child: GestureDetector(
                 onTapUp: (details) {
-                  if (gridState.selectedColor != null) {
+                  if (gridState.selectedColor != null && gridState.remainingCooldownTime == 0) {
                     _handleTapUp(details, gridState);
+                  } else if (gridState.remainingCooldownTime > 0) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Please wait for the cooldown to end')),
+                    );
                   }
                 },
                 child: CustomPaint(
                   key: _canvasKey,
                   painter: GridPainter(gridState: gridState, gridSize: GRID_SIZE),
-                  size: Size(GRID_SIZE.toDouble() * 10, GRID_SIZE.toDouble() * 10), // Adjust canvas size
+                  size: Size(GRID_SIZE.toDouble() * 10, GRID_SIZE.toDouble() * 10),
                 ),
               ),
             ),
@@ -124,13 +132,13 @@ class GridPainter extends CustomPainter {
     paint.strokeWidth = 0.5;
     paint.style = PaintingStyle.stroke;
 
-    // Draw vertical lines within canvas bounds
+    // Draw vertical lines
     for (int i = 0; i <= gridSize; i++) {
       final double position = i * cellSize;
       canvas.drawLine(Offset(position, 0), Offset(position, size.height), paint);
     }
 
-    // Draw horizontal lines within canvas bounds
+    // Draw horizontal lines
     for (int i = 0; i <= gridSize; i++) {
       final double position = i * cellSize;
       canvas.drawLine(Offset(0, position), Offset(size.width, position), paint);
@@ -176,9 +184,7 @@ class ColorPalette extends StatelessWidget {
               decoration: BoxDecoration(
                 color: colorPalette[index],
                 border: Border.all(
-                  color: gridState.selectedColor == colorPalette[index]
-                      ? Colors.white
-                      : Colors.black,
+                  color: gridState.selectedColor == colorPalette[index] ? Colors.white : Colors.black,
                   width: 2,
                 ),
               ),

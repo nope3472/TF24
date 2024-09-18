@@ -35,6 +35,8 @@ dependencies:
   firebase_auth: ^5.2.1
   cloud_firestore: ^5.4.1
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.0.8
+
   # Add flutter_painter for drawing functionality
   flutter_painter: ^1.0.0 # Replace with the latest version
   vector_math: ^2.1.1

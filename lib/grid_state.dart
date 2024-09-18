@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:r_place_clone/colldownmanager.dart';
+
 
 class GridState extends ChangeNotifier {
   static const int GRID_SIZE = 128;
@@ -9,22 +11,50 @@ class GridState extends ChangeNotifier {
   final CollectionReference _gridCollection = FirebaseFirestore.instance.collection('grid');
 
   Color? get selectedColor => _selectedColor;
+  final CooldownManager _cooldownManager = CooldownManager();
+  int _remainingCooldownTime = 0;
+
+  int get remainingCooldownTime => _remainingCooldownTime;
+
+  Future<void> updateGrid(int index, Color color) async {
+    if (await _cooldownManager.canColorPixel()) {
+      if (index >= 0 && index < GRID_SIZE * GRID_SIZE) {
+        if (color == Colors.white) {
+          _grid.remove(index);
+        } else {
+          _grid[index] = color;
+        }
+        await _saveGridState();
+        await _cooldownManager.recordPixelColored();
+        _startCooldownTimer();
+        notifyListeners();
+      }
+    } else {
+      throw Exception('Cooldown period is active');
+    }
+  }
+
+  void _startCooldownTimer() async {
+    while (await _cooldownManager.getRemainingCooldownTime() > 0) {
+      _remainingCooldownTime = await _cooldownManager.getRemainingCooldownTime();
+      notifyListeners();
+      await Future.delayed(Duration(seconds: 1));
+    }
+    _remainingCooldownTime = 0;
+    notifyListeners();
+  }
+
+  Future<void> _resumeCooldownIfNeeded() async {
+    int remainingTime = await _cooldownManager.getRemainingCooldownTime();
+    if (remainingTime > 0) {
+      _remainingCooldownTime = remainingTime;
+      _startCooldownTimer(); // Start the cooldown timer if there is remaining time
+    }
+  }
 
   void setSelectedColor(Color color) {
     _selectedColor = color;
     notifyListeners();
-  }
-
-  void updateGrid(int index, Color color) {
-    if (index >= 0 && index < GRID_SIZE * GRID_SIZE) {
-      if (color == Colors.white) {
-        _grid.remove(index);
-      } else {
-        _grid[index] = color;
-      }
-      _saveGridState();
-      notifyListeners();
-    }
   }
 
   Color getColor(int index) {
@@ -50,6 +80,7 @@ class GridState extends ChangeNotifier {
         ));
         _grid.clear();
         _grid.addAll(gridMap);
+        await _resumeCooldownIfNeeded(); // Check and resume cooldown if needed
         notifyListeners();
         print('Grid state loaded successfully.');
       } else {
