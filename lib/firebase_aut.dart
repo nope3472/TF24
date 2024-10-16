@@ -23,18 +23,14 @@ class AuthService {
           'createdAt': FieldValue.serverTimestamp(),
         });
 
-        print("User signed up successfully: ${user.email}");
         return true;
       } else {
-        print("Failed to get user after sign-up");
         return false;
       }
-    } on FirebaseAuthException catch (e) {
-      print("FirebaseAuthException during sign-up: ${e.code} - ${e.message}");
+    } on FirebaseAuthException {
       // You can handle specific error codes here if needed
       return false;
     } catch (e) {
-      print("Unexpected error during sign-up: $e");
       return false;
     }
   }
@@ -46,11 +42,9 @@ class AuthService {
         password: password,
       );
       return result.user;
-    } on FirebaseAuthException catch (e) {
-      print("FirebaseAuthException during sign-in: ${e.code} - ${e.message}");
+    } on FirebaseAuthException {
       return null;
     } catch (e) {
-      print("Unexpected error during sign-in: $e");
       return null;
     }
   }
@@ -58,9 +52,7 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-      print("User signed out successfully");
     } catch (e) {
-      print("Error during sign-out: $e");
     }
   }
 }
