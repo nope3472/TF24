@@ -61,11 +61,7 @@ Add your google-services.json (for Android) and GoogleService-Info.plist (for iO
 <img src="https://github.com/user-attachments/assets/fc59bf07-c8d0-43b4-8728-d26691ae3c07" width=150 height=250/>
 <img src="https://github.com/user-attachments/assets/cecf3938-12ce-4317-9b95-30a73cf20317" width=150 height=250/>
 
-## Demo Video 🎥
 
-Here is a short demo of the app showcasing its features:
-
-[![Watch the video](https://github.com/user-attachments/assets/video_thumbnail_tf24.png)](https://github.com/user-attachments/assets/tf24_demo_video.mp4)
 
 ## Built With 🛠️
 
